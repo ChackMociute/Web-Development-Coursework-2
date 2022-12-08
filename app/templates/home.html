@@ -4,19 +4,20 @@
 
 <div class='container-fluid'>
     <div class='row'>
-        <div class='col-10 offset-1 my-3 bg-dark text-white rounded border'>
+        <div class='col-10 offset-1 my-3 bg-secondary text-white rounded border'>
             <div class='container-fluid'>
                 <center><h1><b>Songs of the day</b></h1></center>
                 <div class='row'>
                     {% for rec in recommendations %}
-                    <div class='col-4 p-3 my-3 bg-light text-dark rounded border'>
-                        {% autoescape false %}
-                        <center><h3>{{ rec.song }}</h3></center>
-                        <br>
-                        <h5><p>By <i>{{ rec.artist }}</i><p></h5>
-                        <h5><p>From <i>{{ rec.album }} ({{rec.album.year_released}})</i><p></h5>
-                        {% endautoescape %}
-                    </div>
+                        <div class='col-4 p-3 my-3 bg-light text-dark rounded border'>
+                            <center><h3>{{ rec.song }}</h3></center><br>
+                            <h5><p>By <i>{{ rec.artist }}</i><p></h5>
+                            {% if rec.album.year_released == None %}
+                                <h5><p>From <i>{{ rec.album }}</i><p></h5>
+                            {% else %}
+                                <h5><p>From <i>{{ rec.album }} ({{rec.album.year_released}})</i><p></h5>
+                            {% endif %}
+                        </div>
                     {% endfor %}
                 </div>
             </div>
