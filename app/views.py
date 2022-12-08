@@ -22,8 +22,16 @@ def recommendations():
         {'artist': artist, 'song': song, 'album': album}
         for artist, album, song
         in zip(artists, albums, songs)
-        ]
+    ]
 
 @app.route('/')
 def home():
     return render_template('home.html', recommendations=recommendations())
+
+@app.route('/songs')
+def songs():
+    return render_template('songs.html', items=Song.query.all())
+
+@app.route('/albums')
+def albums():
+    return render_template('albums.html', items=Album.query.all())
