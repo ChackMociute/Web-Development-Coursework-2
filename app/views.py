@@ -24,7 +24,6 @@ def base(page, **kwargs):
     if 'logout' in request.form:
         logout_user()
     return render_template(f"{page}.html", **kwargs)
-    
 
 def recommendations():
     seed(mktime(date.today().timetuple()))
@@ -59,7 +58,6 @@ def login():
             return render_template('login.html', form=form)
         else:
             login_user(user)
-            flash('Logged in successfully.')
             return redirect(url_for('home'))
     return render_template('login.html', form=form)
 
@@ -67,8 +65,14 @@ def login():
 def signup():
     form = LoginForm()
     if form.validate_on_submit():
-        login_user(User.query.filter(User.username == form.username.data).first())
-        flash('Logged in successfully.')
+        user = User.query.filter(User.username == form.username.data).first()
+        if user is not None:
+            flash('Username already exists.')
+            return render_template('signup.html', form=form)
+        else:
+            db.session.add(User(username=form.username.data, password=form.password.data))
+            db.session.commit()
+            return redirect(url_for('login'))
         
     return render_template('signup.html', form=form)
 
