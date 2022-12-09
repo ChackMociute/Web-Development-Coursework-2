@@ -1,4 +1,6 @@
-from app import db
+from app import db, bcrypt
+from flask_login import UserMixin
+
 
 favorite_song = db.Table('favorite_song', db.Model.metadata,
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -10,11 +12,22 @@ favorite_album = db.Table('favorite_album', db.Model.metadata,
     db.Column('album_id', db.Integer, db.ForeignKey('album.id'))
 )
 
-class User(db.Model):
+class User(db.Model, UserMixin):
+    def __init__(self, password=None, **kwargs):
+        if password is not None: kwargs['password'] = self.encrypt_password(password)
+        super(User, self).__init__(**kwargs)
+        
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), index=True)
+    password = db.Column(db.BINARY)
     favorite_songs = db.relationship('Song', secondary=favorite_song)
     favorite_albums = db.relationship('Album', secondary=favorite_album)
+    
+    def encrypt_password(self, password):
+        return bcrypt.generate_password_hash(password)
+    
+    def verify_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
     
     def __repr__(self):
         return self.username

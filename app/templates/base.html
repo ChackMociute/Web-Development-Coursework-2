@@ -29,11 +29,25 @@
         <a class="navbar-brand" href="/albums">Albums</a>
       </ul>
     </div>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav navbar-center">
-        <a class="navbar-text text-white" style="position:relative; right:150px;"><h4><b>{% block page %}{% endblock %}</b></h4></a>
-      </ul>
+    <div class="navbar-collapse" id="navbarSupportedContent">
+        <a class="navbar-text text-white"><h4><b>{% block page %}{% endblock %}</b></h4></a>
     </div>
+    <form action="", method="post">
+      <span class="navbar-collapse">
+        <div class="px-5">
+          {% if current_user.is_authenticated %}
+            <h4 class='px-5 text-white'>{{ current_user.username }}</h4>
+          {% else %}
+        </div>
+        <div class="px-1">
+          <button class="btn btn-outline-info" type="submit" name="login"><h4>Login</h4></button>
+        </div>
+          <div class="px-1">
+          <button class="btn btn-outline-info" type="submit" name="signup"><h4>Sign up</h4></button>
+        </div>
+        {% endif %}
+      </span>
+    </form>
   </nav>
 
   {% block content %}{% endblock %}
