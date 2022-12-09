@@ -34,17 +34,20 @@
     </div>
     <form action="", method="post">
       <span class="navbar-collapse">
-        <div class="px-5">
           {% if current_user.is_authenticated %}
-            <h4 class='px-5 text-white'>{{ current_user.username }}</h4>
+            <div class="px-2">
+              <h4 class='text-white'>{{ current_user.username }}</h4>
+            </div>
+            <div class="px-4">
+              <button class="btn btn-outline-info" type="submit" name="logout"><h4>Log out</h4></button>
+            </div>
           {% else %}
-        </div>
-        <div class="px-1">
-          <button class="btn btn-outline-info" type="submit" name="login"><h4>Login</h4></button>
-        </div>
-          <div class="px-1">
-          <button class="btn btn-outline-info" type="submit" name="signup"><h4>Sign up</h4></button>
-        </div>
+            <div class="px-1">
+              <button class="btn btn-outline-info" type="submit" name="login"><h4>Login</h4></button>
+            </div>
+            <div class="px-1">
+              <button class="btn btn-outline-info" type="submit" name="signup"><h4>Sign up</h4></button>
+            </div>
         {% endif %}
       </span>
     </form>

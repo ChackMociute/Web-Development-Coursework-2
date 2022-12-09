@@ -1,7 +1,7 @@
 from app import app, db, admin, login_manager
 from flask import render_template, request, redirect, url_for, flash
 from flask_admin.contrib.sqla import ModelView
-from flask_login import login_user
+from flask_login import login_user, logout_user
 from .models import User, Artist, Album, Song
 from .forms import LoginForm
 
@@ -16,6 +16,16 @@ admin.add_view(ModelView(Album, db.session))
 admin.add_view(ModelView(Song, db.session))
 
 
+def base(page, **kwargs):
+    if 'login' in request.form:
+        return redirect(url_for('login'))
+    if 'signup' in request.form:
+        return redirect(url_for('signup'))
+    if 'logout' in request.form:
+        logout_user()
+    return render_template(f"{page}.html", **kwargs)
+    
+
 def recommendations():
     seed(mktime(date.today().timetuple()))
     artists = choices(Artist.query.all(), k=3)
@@ -29,19 +39,15 @@ def recommendations():
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    if 'login' in request.form:
-        return redirect(url_for('login'))
-    if 'signup' in request.form:
-        return redirect(url_for('signup'))
-    return render_template('home.html', recommendations=recommendations())
+    return base('home', recommendations=recommendations())
 
 @app.route('/songs', methods=['GET', 'POST'])
 def songs():
-    return render_template('songs.html', items=Song.query.all())
+    return base('songs', items=Song.query.all())
 
 @app.route('/albums', methods=['GET', 'POST'])
 def albums():
-    return render_template('albums.html', items=Album.query.all())
+    return base('albums', items=Album.query.all())
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
