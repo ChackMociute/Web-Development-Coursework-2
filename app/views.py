@@ -2,7 +2,7 @@ from app import app, db, admin, login_manager
 from flask import render_template, request, redirect, url_for, flash, session
 from flask_admin.contrib.sqla import ModelView
 from flask_login import login_user, logout_user, login_required
-from .models import User, Artist, Album, Song
+from .models import User, Artist, Album, Song, FavoriteAlbum, FavoriteSong
 from .forms import LoginForm, AlbumForm, SongForm
 from sqlalchemy import func
 
@@ -59,7 +59,11 @@ def add_album(user, form):
             db.session.add(artist)
         album = Album(title=form.a_title.data, artist=artist, year_released=form.year.data)
         db.session.add(album)
-    user.favorite_albums.append(album)
+    association = FavoriteAlbum.query.filter(FavoriteAlbum.user == user, FavoriteAlbum.album == album).first()
+    if association is None:
+        user.favorite_albums.append(FavoriteAlbum(album=album, rating=form.a_score.data))
+    else:
+        association.rating = form.a_score.data
     db.session.commit()
 
 def add_song(user, form):
@@ -78,7 +82,11 @@ def add_song(user, form):
                 db.session.add(album)
         song = Song(title=form.s_title.data, artist=artist, album=album)
         db.session.add(song)
-    user.favorite_songs.append(song)
+    association = FavoriteSong.query.filter(FavoriteSong.user == user, FavoriteSong.song == song).first()
+    if association is None:
+        user.favorite_songs.append(FavoriteSong(song=song, rating=form.s_score.data))
+    else:
+        association.rating = form.s_score.data
     db.session.commit()
 
 @app.route('/profile', methods=['GET', 'POST'])
@@ -89,6 +97,7 @@ def profile():
     song_form = SongForm()
     if album_form.a_submit.data and album_form.validate_on_submit():
         add_album(user, album_form)
+        flash("Album added successfully")
     if song_form.s_submit.data and song_form.validate_on_submit():
         add_song(user, song_form)
     return base('profile', user=user, album_form=album_form, song_form=song_form)

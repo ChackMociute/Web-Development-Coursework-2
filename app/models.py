@@ -2,15 +2,19 @@ from app import db, bcrypt
 from flask_login import UserMixin
 
 
-favorite_song = db.Table('favorite_song', db.Model.metadata,
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('song_id', db.Integer, db.ForeignKey('song.id'))
-)
+class FavoriteSong(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    song_id = db.Column(db.Integer, db.ForeignKey('song.id'), primary_key=True)
+    user = db.relationship('User', back_populates='favorite_songs')
+    song = db.relationship('Song', back_populates='favored')
+    rating = db.Column(db.Float)
 
-favorite_album = db.Table('favorite_album', db.Model.metadata,
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('album_id', db.Integer, db.ForeignKey('album.id'))
-)
+class FavoriteAlbum(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    album_id = db.Column(db.Integer, db.ForeignKey('album.id'), primary_key=True)
+    user = db.relationship('User', back_populates='favorite_albums')
+    album = db.relationship('Album', back_populates='favored')
+    rating = db.Column(db.Float)
 
 class User(db.Model, UserMixin):
     def __init__(self, password=None, **kwargs):
@@ -20,8 +24,8 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), index=True)
     password = db.Column(db.BINARY)
-    favorite_songs = db.relationship('Song', secondary=favorite_song)
-    favorite_albums = db.relationship('Album', secondary=favorite_album)
+    favorite_songs = db.relationship('FavoriteSong', back_populates='user')
+    favorite_albums = db.relationship('FavoriteAlbum', back_populates='user')
     
     def encrypt_password(self, password):
         return bcrypt.generate_password_hash(password)
@@ -48,6 +52,7 @@ class Album(db.Model):
     artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'))
     artist = db.relationship('Artist', back_populates='albums')
     songs = db.relationship('Song', back_populates='album')
+    favored = db.relationship('FavoriteAlbum', back_populates='album')
     
     def __repr__(self):
         return self.title
@@ -59,6 +64,7 @@ class Song(db.Model):
     artist = db.relationship('Artist', back_populates='songs')
     album_id = db.Column(db.Integer, db.ForeignKey('album.id'))
     album = db.relationship('Album', back_populates='songs')
+    favored = db.relationship('FavoriteSong', back_populates='song')
     
     def __repr__(self):
         return self.title
