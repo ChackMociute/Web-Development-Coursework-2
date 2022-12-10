@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block page %}My profile{% endblock %}
+
+{% block content %}
+
+<div class='container-fluid'>
+<div class='row my-4'>
+    <div class='col-4 offset-1'>
+        <table class="table table-hover table-bordered">
+            <h3><center>My favorite albums</center></h3>
+            <thead class="thead-light">
+                {% if user.favorite_albums|length == 0 %}
+                <tr>
+                    <th scope="col"><center>No albums have been added yet</center></th>
+                </tr>
+                {% else %}
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col"><center>Title</center></th>
+                    <th scope="col"><center>Artist</center></th>
+                    <th scope="col"><center>Release date</center></th>
+                </tr>
+                {% endif %}
+            </thead>
+            <tbody>
+                {% for album in user.favorite_albums %}
+                <tr>
+                    <td><input type="checkbox" name="album_id" , value="{{ album.id }}"></td>
+                    <td align="center">{{ album.title }}</td>
+                    <td align="center">{{ album.artist }}</td>
+                    <td align="center">{{ album.year_released }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class='col-4 offset-1'>
+        <table class="table table-hover table-bordered">
+            <h3><center>My favorite songs</center></h3>
+            <thead class="thead-light">
+                {% if user.favorite_songs|length == 0 %}
+                <tr>
+                    <th scope="col"><center>No Songs have been added yet</center></th>
+                </tr>
+                {% else %}
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col"><center>Title</center></th>
+                    <th scope="col"><center>Artist</center></th>
+                    <th scope="col"><center>Album</center></th>
+                </tr>
+                {% endif %}
+            </thead>
+            <tbody>
+                {% for song in user.favorite_songs %}
+                <tr>
+                    <td><input type="checkbox" name="song_id" , value="{{ song.id }}"></td>
+                    <td align="center">{{ song.title }}</td>
+                    <td align="center">{{ song.artist }}</td>
+                    <td align="center">{{ song.album }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+{% endblock %}

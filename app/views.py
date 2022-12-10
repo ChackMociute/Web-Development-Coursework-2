@@ -1,10 +1,9 @@
 from app import app, db, admin, login_manager
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, session
 from flask_admin.contrib.sqla import ModelView
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, login_required
 from .models import User, Artist, Album, Song
 from .forms import LoginForm
-
 
 from random import choice, choices, seed
 from datetime import date
@@ -17,12 +16,14 @@ admin.add_view(ModelView(Song, db.session))
 
 
 def base(page, **kwargs):
+    print(session)
     if 'login' in request.form:
         return redirect(url_for('login'))
     if 'signup' in request.form:
         return redirect(url_for('signup'))
     if 'logout' in request.form:
         logout_user()
+        return redirect(url_for('home'))
     return render_template(f"{page}.html", **kwargs)
 
 def recommendations():
@@ -48,6 +49,12 @@ def songs():
 def albums():
     return base('albums', items=Album.query.all())
 
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    user = User.query.get(int(session['_user_id']))
+    return base('profile', user=user)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -59,7 +66,7 @@ def login():
         else:
             login_user(user)
             return redirect(url_for('home'))
-    return render_template('login.html', form=form)
+    return base('login', form=form)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -74,7 +81,7 @@ def signup():
             db.session.commit()
             return redirect(url_for('login'))
         
-    return render_template('signup.html', form=form)
+    return base('signup', form=form)
 
 @login_manager.user_loader
 def load_user(user_id):
