@@ -3,7 +3,8 @@ from flask import render_template, request, redirect, url_for, flash, session
 from flask_admin.contrib.sqla import ModelView
 from flask_login import login_user, logout_user, login_required
 from .models import User, Artist, Album, Song
-from .forms import LoginForm
+from .forms import LoginForm, AlbumForm, SongForm
+from sqlalchemy import func
 
 from random import choice, choices, seed
 from datetime import date
@@ -16,7 +17,6 @@ admin.add_view(ModelView(Song, db.session))
 
 
 def base(page, **kwargs):
-    print(session)
     if 'login' in request.form:
         return redirect(url_for('login'))
     if 'signup' in request.form:
@@ -49,11 +49,49 @@ def songs():
 def albums():
     return base('albums', items=Album.query.all())
 
+def add_album(user, form):
+    artist = Artist.query.filter(func.lower(Artist.name) == form.a_artist.data.lower()).first()
+    album = Album.query.filter(func.lower(Album.title) == form.a_title.data.lower(),
+                               Album.artist == artist).first()
+    if album is None:
+        if artist is None:
+            artist = Artist(name=form.a_artist.data)
+            db.session.add(artist)
+        album = Album(title=form.a_title.data, artist=artist, year_released=form.year.data)
+        db.session.add(album)
+    user.favorite_albums.append(album)
+    db.session.commit()
+
+def add_song(user, form):
+    artist = Artist.query.filter(func.lower(Artist.name) == form.s_artist.data.lower()).first()
+    song = Song.query.filter(func.lower(Song.title) == form.s_title.data.lower(),
+                            Album.artist == artist).first()
+    if song is None:
+        if artist is None:
+            artist = Artist(name=form.s_artist.data)
+            db.session.add(artist)
+        if form.album.data is not None:
+            album = Album.query.filter(func.lower(Album.title) == form.album.data.lower(),
+                                       Album.artist == artist).first()
+            if album is None:
+                album = Album(title=form.album.data, artist=artist)
+                db.session.add(album)
+        song = Song(title=form.s_title.data, artist=artist, album=album)
+        db.session.add(song)
+    user.favorite_songs.append(song)
+    db.session.commit()
+
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     user = User.query.get(int(session['_user_id']))
-    return base('profile', user=user)
+    album_form = AlbumForm()
+    song_form = SongForm()
+    if album_form.a_submit.data and album_form.validate_on_submit():
+        add_album(user, album_form)
+    if song_form.s_submit.data and song_form.validate_on_submit():
+        add_song(user, song_form)
+    return base('profile', user=user, album_form=album_form, song_form=song_form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

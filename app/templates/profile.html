@@ -8,7 +8,7 @@
 <div class='row my-4'>
     <div class='col-4 offset-1'>
         <table class="table table-hover table-bordered">
-            <h3><center>My favorite albums</center></h3>
+            <h3><center><b>My favorite albums</b></center></h3>
             <thead class="thead-light">
                 {% if user.favorite_albums|length == 0 %}
                 <tr>
@@ -19,7 +19,7 @@
                     <th scope="col"></th>
                     <th scope="col"><center>Title</center></th>
                     <th scope="col"><center>Artist</center></th>
-                    <th scope="col"><center>Release date</center></th>
+                    <th scope="col"><center>Release year</center></th>
                 </tr>
                 {% endif %}
             </thead>
@@ -29,15 +29,17 @@
                     <td><input type="checkbox" name="album_id" , value="{{ album.id }}"></td>
                     <td align="center">{{ album.title }}</td>
                     <td align="center">{{ album.artist }}</td>
-                    <td align="center">{{ album.year_released }}</td>
+                    {% if album.year_released != None %}
+                        <td align="center">{{ album.year_released }}</td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    <div class='col-4 offset-1'>
+    <div class='col-4'>
         <table class="table table-hover table-bordered">
-            <h3><center>My favorite songs</center></h3>
+            <h3><center><b>My favorite songs</b></center></h3>
             <thead class="thead-light">
                 {% if user.favorite_songs|length == 0 %}
                 <tr>
@@ -58,11 +60,128 @@
                     <td><input type="checkbox" name="song_id" , value="{{ song.id }}"></td>
                     <td align="center">{{ song.title }}</td>
                     <td align="center">{{ song.artist }}</td>
-                    <td align="center">{{ song.album }}</td>
+                    {% if song.album != None %}
+                        <td align="center">{{ song.album }}</td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+    <div class='col-3'>
+        <h3><center><b>Add album</b></center></h3>
+        <form action="" method="post" name="add_album">
+            {{ album_form.hidden_tag() }}
+            <div class='container-fluid'>
+                <div class='row'>
+                    <div class='col-12'>
+                        <h3><b></b></h3>
+                        {{ album_form.a_title(class_='form-control') }}
+                        {% for error in album_form.a_title.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            [{{ error }}]
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-12'>
+                        <h3><b></b></h3>
+                        {{ album_form.a_artist(class_='form-control') }}
+                        {% for error in album_form.a_artist.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            [{{ error }}]
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-6'>
+                        <h3><b></b></h3>
+                        {{ album_form.year(class_='form-control') }}
+                    </div>
+                    <div class="col-6 py-2">
+                        {{ album_form.a_submit(class_='form-control btn btn-primary col-12') }}
+                    </div>
+                    <div class='col-12'>
+                        {% for error in album_form.year.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            [{{ error }}]
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="row">
+                        <div class="col-4 col-md-4 col-sm-12">
+                            {% for message in messages %}
+                            <div class="alert alert-success">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </form>
+        <br>
+        <h3><center><b>Add Song</b></center></h3>
+        <form action="" method="post" name="add_song">
+            {{ song_form.hidden_tag() }}
+            <div class='container-fluid'>
+                <div class='row'>
+                    <div class='col-12'>
+                        <h3><b></b></h3>
+                        {{ song_form.s_title(class_='form-control') }}
+                        {% for error in song_form.s_title.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            [{{ error }}]
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-12'>
+                        <h3><b></b></h3>
+                        {{ song_form.s_artist(class_='form-control') }}
+                        {% for error in song_form.s_artist.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            [{{ error }}]
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-12'>
+                        <h3><b></b></h3>
+                        {{ song_form.album(class_='form-control') }}
+                        {% for error in song_form.album.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            [{{ error }}]
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 py-2">
+                        {{ song_form.s_submit(class_='form-control btn btn-primary col-12') }}
+                    </div>
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="col-12">
+                            {% for message in messages %}
+                            <div class="alert alert-success">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 </div>
