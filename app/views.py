@@ -44,11 +44,15 @@ def home():
 
 @app.route('/songs', methods=['GET', 'POST'])
 def songs():
-    return base('songs', items=Song.query.all())
+    return base('songs', items=sorted(Song.query.all(),
+                                       key=lambda x: 0 if x.mean_score() is None
+                                       else x.mean_score(), reverse=True))
 
 @app.route('/albums', methods=['GET', 'POST'])
 def albums():
-    return base('albums', items=Album.query.all())
+    return base('albums', items=sorted(Album.query.all(),
+                                       key=lambda x: 0 if x.mean_score() is None
+                                       else x.mean_score(), reverse=True))
 
 def get_artist(artist_name):
     artist = Artist.query.filter(func.lower(Artist.name) == artist_name.lower()).first()
