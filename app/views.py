@@ -72,6 +72,7 @@ def add_album(user, form):
     if association is None: user.favorite_albums.append(FavoriteAlbum(album=album, rating=form.a_score.data))
     elif form.a_score.data is not None: association.rating = form.a_score.data
     db.session.commit()
+    flash("Album added successfully")
 
 def add_song(user, form):
     artist = get_artist(form.s_artist.data)
@@ -81,6 +82,12 @@ def add_song(user, form):
     if association is None: user.favorite_songs.append(FavoriteSong(song=song, rating=form.s_score.data))
     elif form.s_score.data is not None: association.rating = form.s_score.data
     db.session.commit()
+    flash("Song added successfully")
+
+def remove_favorites(user, table, type):
+    for id in request.form.getlist(f"{type}_id"):
+        db.session.delete(table.query.get((user.id, int(id))))
+    db.session.commit()
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -88,12 +95,10 @@ def profile():
     user = User.query.get(int(session['_user_id']))
     album_form = AlbumForm()
     song_form = SongForm()
-    if album_form.a_submit.data and album_form.validate_on_submit():
-        add_album(user, album_form)
-        flash("Album added successfully")
-    if song_form.s_submit.data and song_form.validate_on_submit():
-        add_song(user, song_form)
-        flash("Song added successfully")
+    if album_form.a_submit.data and album_form.validate_on_submit(): add_album(user, album_form)
+    if song_form.s_submit.data and song_form.validate_on_submit(): add_song(user, song_form)
+    if 'album_button' in request.form: remove_favorites(user, FavoriteAlbum, 'album')
+    if 'song_button' in request.form: remove_favorites(user, FavoriteSong, 'song')
     return base('profile', user=user, album_form=album_form, song_form=song_form)
 
 @app.route('/login', methods=['GET', 'POST'])

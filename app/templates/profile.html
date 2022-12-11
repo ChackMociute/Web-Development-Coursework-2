@@ -6,9 +6,16 @@
 
 <div class='container-fluid'>
 <div class='row my-4'>
-    <div class='col-5'>
+    <form action="" method="post" class='col-5'>
         <table class="table table-hover table-bordered">
-            <h3><center><b>My favorite albums</b></center></h3>
+            <div class='row'>
+                <div class='col-7'>
+                    <h3><b>My favorite albums</b></h3>
+                </div>
+                <div class='col-5'>
+                    <button type="submit" name="album_button" value="delete" class="btn btn-danger col-12">Remove selected</button>
+                </div>
+            </div>
             <thead class="thead-light">
                 {% if user.favorite_albums|length == 0 %}
                 <tr>
@@ -40,10 +47,17 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-    <div class='col-4'>
+    </form>
+    <form action="" method="post" class='col-4'>
         <table class="table table-hover table-bordered">
-            <h3><center><b>My favorite songs</b></center></h3>
+            <div class='row'>
+                <div class='col-7'>
+                    <h3><b>My favorite songs</b></h3>
+                </div>
+                <div class='col-5'>
+                    <button type="submit" name="song_button" value="delete" class="btn btn-danger col-12">Remove selected</button>
+                </div>
+            </div>
             <thead class="thead-light">
                 {% if user.favorite_songs|length == 0 %}
                 <tr>
@@ -75,7 +89,7 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
+    </form>
     <div class='col-3'>
         <h3><center><b>Add album</b></center></h3>
         <form action="" method="post" name="add_album">
