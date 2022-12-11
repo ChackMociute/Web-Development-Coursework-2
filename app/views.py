@@ -9,6 +9,7 @@ from sqlalchemy import func
 from random import choice, choices, seed
 from datetime import date
 from time import mktime
+import json
 
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Artist, db.session))
@@ -100,6 +101,14 @@ def profile():
     if 'album_button' in request.form: remove_favorites(user, FavoriteAlbum, 'album')
     if 'song_button' in request.form: remove_favorites(user, FavoriteSong, 'song')
     return base('profile', user=user, album_form=album_form, song_form=song_form)
+
+@app.route('/profile/edit', methods=['POST'])
+def edit():
+    data = json.loads(request.data)
+    response = data.get('response')
+
+	# Process the response
+    return json.dumps({'status': 'OK', 'response': response})
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

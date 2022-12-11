@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block scripts %}
+	<script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}" ></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='edit.js') }}" ></script>
+{% endblock %}
+
 {% block page %}My profile{% endblock %}
 
 {% block content %}
@@ -33,15 +38,16 @@
             </thead>
             <tbody>
                 {% for album in user.favorite_albums %}
-                <tr>
+                <tr class="table", id="{{ album.album.id }}">
                     <td><input type="checkbox" name="album_id" , value="{{ album.album.id }}"></td>
                     <td align="center">{{ album.album.title }}</td>
                     <td align="center">{{ album.album.artist }}</td>
                     <td align="center">
                         {% if album.album.year_released != None %}{{ album.album.year_released }}{% endif %}
                     </td>
-                    <td align="center">
+                    <td align="center" style="position: relative;">
                         {% if album.rating != None %}{{ album.rating }}{% endif %}
+                        <p class="positioned" id="p{{ album.album.id }}"></p>
                     </td>
                 </tr>
                 {% endfor %}
@@ -75,15 +81,16 @@
             </thead>
             <tbody>
                 {% for song in user.favorite_songs %}
-                <tr>
+                <tr class="table", id="{{ song.song.id }}">
                     <td><input type="checkbox" name="song_id" , value="{{ song.song.id }}"></td>
                     <td align="center">{{ song.song.title }}</td>
                     <td align="center">{{ song.song.artist }}</td>
                     <td align="center">
                         {% if song.song.album != None %}{{ song.song.album }}{% endif %}
                     </td>
-                    <td align="center">
+                    <td align="center" style="position: relative;">
                         {% if song.rating != None %}{{ song.rating }}{% endif %}
+                        <p class="positioned" id="p{{ song.song.id }}"></p>
                     </td>
                 </tr>
                 {% endfor %}
@@ -160,7 +167,7 @@
             </div>
         </form>
         <br>
-        <h3><center><b>Add Song</b></center></h3>
+        <h3><center><b>Add song</b></center></h3>
         <form action="" method="post" name="add_song">
             {{ song_form.hidden_tag() }}
             <div class='container-fluid'>
@@ -220,5 +227,7 @@
     </div>
 </div>
 </div>
+
+<p id="response"></p>
 
 {% endblock %}
