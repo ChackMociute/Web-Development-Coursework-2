@@ -1,5 +1,6 @@
 from app import db, bcrypt
 from flask_login import UserMixin
+from statistics import mean
 
 
 class FavoriteSong(db.Model):
@@ -54,6 +55,10 @@ class Album(db.Model):
     songs = db.relationship('Song', back_populates='album')
     favored = db.relationship('FavoriteAlbum', back_populates='album')
     
+    def mean_score(self):
+        if len(self.favored) < 1: return None
+        return mean([r.rating for r in self.favored])
+    
     def __repr__(self):
         return self.title
 
@@ -65,6 +70,10 @@ class Song(db.Model):
     album_id = db.Column(db.Integer, db.ForeignKey('album.id'))
     album = db.relationship('Album', back_populates='songs')
     favored = db.relationship('FavoriteSong', back_populates='song')
+    
+    def mean_score(self):
+        if len(self.favored) < 1: return None
+        return mean([r.rating for r in self.favored])
     
     def __repr__(self):
         return self.title
