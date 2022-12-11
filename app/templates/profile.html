@@ -47,7 +47,7 @@
                     </td>
                     <td align="center" style="position: relative;">
                         {% if album.rating != None %}{{ album.rating }}{% endif %}
-                        <p class="positioned" id="p{{ album.album.id }}"></p>
+                        <p class="positioned" id="album{{ album.album.id }}"></p>
                     </td>
                 </tr>
                 {% endfor %}
@@ -90,7 +90,7 @@
                     </td>
                     <td align="center" style="position: relative;">
                         {% if song.rating != None %}{{ song.rating }}{% endif %}
-                        <p class="positioned" id="p{{ song.song.id }}"></p>
+                        <p class="positioned" id="song{{ song.song.id }}"></p>
                     </td>
                 </tr>
                 {% endfor %}

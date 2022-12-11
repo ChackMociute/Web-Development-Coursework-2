@@ -168,7 +168,7 @@ def edit():
     type, id = *data.get('id').split(','),
     session['last'] = {'type': type, 'id': id}
     
-    return json.dumps({'status': 'OK', 'id': id})
+    return json.dumps({'status': 'OK', 'id': id, 'type': type})
 
 @login_manager.user_loader
 def load_user(user_id):
