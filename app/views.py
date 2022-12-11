@@ -93,6 +93,7 @@ def profile():
         flash("Album added successfully")
     if song_form.s_submit.data and song_form.validate_on_submit():
         add_song(user, song_form)
+        flash("Song added successfully")
     return base('profile', user=user, album_form=album_form, song_form=song_form)
 
 @app.route('/login', methods=['GET', 'POST'])

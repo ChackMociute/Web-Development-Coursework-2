@@ -132,7 +132,7 @@
                 </div>
                 <div class="row">
                 {% with messages = get_flashed_messages() %}
-                {% if messages %}
+                {% if (messages and album_form.a_submit.data) %}
                     <div class="col-12">
                         {% for message in messages %}
                         <div class="alert alert-success">
@@ -190,7 +190,7 @@
                 </div>
                 <div class="row">
                     {% with messages = get_flashed_messages() %}
-                    {% if messages %}
+                    {% if (messages and song_form.s_submit.data) %}
                         <div class="col-12 py-1">
                             {% for message in messages %}
                             <div class="alert alert-success">
