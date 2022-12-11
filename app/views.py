@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, url_for, flash, session
 from flask_admin.contrib.sqla import ModelView
 from flask_login import login_user, logout_user, login_required
 from .models import User, Artist, Album, Song, FavoriteAlbum, FavoriteSong
-from .forms import LoginForm, AlbumForm, SongForm
+from .forms import LoginForm, AlbumForm, SongForm, AlbumEditForm, SongEditForm
 from sqlalchemy import func
 
 from random import choice, choices, seed
@@ -102,13 +102,37 @@ def profile():
     if 'song_button' in request.form: remove_favorites(user, FavoriteSong, 'song')
     return base('profile', user=user, album_form=album_form, song_form=song_form)
 
-@app.route('/profile/edit', methods=['POST'])
-def edit():
-    data = json.loads(request.data)
-    response = data.get('response')
+def add_to_album(album, songs):
+    for s in [s.strip() for s in songs.split(',')]:
+        song = Song.query.filter(Song.title == s, Song.artist == album.artist).first()
+        if song is None: song = Song(title=s, artist=album.artist)
+        if song not in album.songs: album.songs.append(song)
 
-	# Process the response
-    return json.dumps({'status': 'OK', 'response': response})
+def update_album_db(form, album):
+    user = User.query.get(int(session['_user_id']))
+    association = FavoriteAlbum.query.filter(FavoriteAlbum.user == user, FavoriteAlbum.album == album).first()
+    if form.score.data is not None: association.rating = form.score.data
+    if form.year.data is not None: album.year_released = form.year.data
+    if form.songs.data != '': add_to_album(album, form.songs.data)
+
+def update_song_db(form, song):
+    user = User.query.get(int(session['_user_id']))
+    association = FavoriteSong.query.filter(FavoriteSong.user == user, FavoriteSong.song == song).first()
+    if form.score.data is not None: association.rating = form.score.data
+
+@app.route('/profile/edit', methods=['GET', 'POST'])
+@login_required
+def update():
+    album_update = session['last']['type'] == 'album'
+    id = int(session['last']['id'])
+    form = AlbumEditForm() if album_update else SongEditForm()
+    item = Album.query.get(id) if album_update else Song.query.get(id)
+    if form.validate_on_submit():
+        if album_update: update_album_db(form, item)
+        else: update_song_db(form, item)
+        db.session.commit()
+        return redirect(url_for('profile'))
+    return base('edit', form=form, album=album_update, item=item)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -137,6 +161,14 @@ def signup():
             return redirect(url_for('login'))
         
     return base('signup', form=form)
+
+@app.route('/edit', methods=['POST'])
+def edit():
+    data = json.loads(request.data)
+    type, id = *data.get('id').split(','),
+    session['last'] = {'type': type, 'id': id}
+    
+    return json.dumps({'status': 'OK', 'id': id})
 
 @login_manager.user_loader
 def load_user(user_id):

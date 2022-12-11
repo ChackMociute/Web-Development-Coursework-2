@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block page %}Edit{% endblock %}
+
+{% block content %}
+
+<form action="" method="post" name="login">
+{{ form.hidden_tag() }}
+<div class='container-fluid'>
+<div class='row my-4'>
+    <div class='col-6 offset-2'>
+        <h2><center><b>Edit {% if album %}album{% else %}song{% endif %}: {{ item.title }}</b></center></h2>
+        <h4><center><b>By <i>{{ item.artist }}</i></b></center></h4>
+    </div>
+</div>
+<div class='row my-4'>
+    <div class='col-3 offset-2'>
+        <h4><b>Score <i>(between 0 and 100)</i></b></h4>
+        {{ form.score(class_='form-control') }}
+        {% for error in form.score.errors %}
+        <div class="alert alert-danger" role="alert">
+            [{{ error }}]
+        </div>
+        {% endfor %}
+    </div>
+    <div class='col-3'>
+    {% if album %}
+        <h4><b>Release year</b></h4>
+        {{ form.year(class_='form-control') }}
+        {% for error in form.year.errors %}
+        <div class="alert alert-danger" role="alert">
+            [{{ error }}]
+        </div>
+        {% endfor %}
+    {% else %}
+    <h4><b>Album</b></h4>
+    {{ form.album(class_='form-control') }}
+    {% for error in form.album.errors %}
+    <div class="alert alert-danger" role="alert">
+        [{{ error }}]
+    </div>
+    {% endfor %}
+    {% endif %}
+    </div>
+</div>
+{% if album %}
+<div class="row py-1">
+    <div class='col-6 offset-2'>
+        <h4><b>Songs (separated by commas)</b></h4>
+        {{ form.songs(class_='form-control', style='height: 200px;') }}
+        {% for error in form.songs.errors %}
+        <div class="alert alert-danger" role="alert">
+            [{{ error }}]
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+<div class="row py-1">
+    <div class="col-6 offset-2">
+        {{ form.submit(class_='form-control btn btn-primary col-12') }}
+    </div>
+    <div class="col-6 offset-2">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+</div>
+</div>
+</form>
+
+{% endblock %}

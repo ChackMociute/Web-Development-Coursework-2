@@ -38,7 +38,7 @@
             </thead>
             <tbody>
                 {% for album in user.favorite_albums %}
-                <tr class="table", id="{{ album.album.id }}">
+                <tr class="table", id="album,{{ album.album.id }}">
                     <td><input type="checkbox" name="album_id" , value="{{ album.album.id }}"></td>
                     <td align="center">{{ album.album.title }}</td>
                     <td align="center">{{ album.album.artist }}</td>
@@ -81,7 +81,7 @@
             </thead>
             <tbody>
                 {% for song in user.favorite_songs %}
-                <tr class="table", id="{{ song.song.id }}">
+                <tr class="table", id="song,{{ song.song.id }}">
                     <td><input type="checkbox" name="song_id" , value="{{ song.song.id }}"></td>
                     <td align="center">{{ song.song.title }}</td>
                     <td align="center">{{ song.song.artist }}</td>
