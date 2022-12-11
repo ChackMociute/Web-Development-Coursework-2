@@ -49,44 +49,37 @@ def songs():
 def albums():
     return base('albums', items=Album.query.all())
 
+def get_artist(artist_name):
+    artist = Artist.query.filter(func.lower(Artist.name) == artist_name.lower()).first()
+    if artist is None:
+        artist = Artist(name=artist_name)
+        db.session.add(artist)
+    return artist
+
+def get_item(table, title, artist, **kwargs):
+    item = table.query.filter(func.lower(table.title) == title.lower(), table.artist == artist).first()
+    if item is None:
+        item = table(title=title, artist=artist, **kwargs)
+        db.session.add(item)
+    for key, value in kwargs.items():
+        if value is not None: setattr(item, key, value)
+    return item
+    
 def add_album(user, form):
-    artist = Artist.query.filter(func.lower(Artist.name) == form.a_artist.data.lower()).first()
-    album = Album.query.filter(func.lower(Album.title) == form.a_title.data.lower(),
-                               Album.artist == artist).first()
-    if album is None:
-        if artist is None:
-            artist = Artist(name=form.a_artist.data)
-            db.session.add(artist)
-        album = Album(title=form.a_title.data, artist=artist, year_released=form.year.data)
-        db.session.add(album)
+    artist = get_artist(form.a_artist.data)
+    album = get_item(Album, form.a_title.data, artist, year_released=form.year.data)
     association = FavoriteAlbum.query.filter(FavoriteAlbum.user == user, FavoriteAlbum.album == album).first()
-    if association is None:
-        user.favorite_albums.append(FavoriteAlbum(album=album, rating=form.a_score.data))
-    else:
-        association.rating = form.a_score.data
+    if association is None: user.favorite_albums.append(FavoriteAlbum(album=album, rating=form.a_score.data))
+    elif form.a_score.data is not None: association.rating = form.a_score.data
     db.session.commit()
 
 def add_song(user, form):
-    artist = Artist.query.filter(func.lower(Artist.name) == form.s_artist.data.lower()).first()
-    song = Song.query.filter(func.lower(Song.title) == form.s_title.data.lower(),
-                            Album.artist == artist).first()
-    if song is None:
-        if artist is None:
-            artist = Artist(name=form.s_artist.data)
-            db.session.add(artist)
-        if form.album.data is not None:
-            album = Album.query.filter(func.lower(Album.title) == form.album.data.lower(),
-                                       Album.artist == artist).first()
-            if album is None:
-                album = Album(title=form.album.data, artist=artist)
-                db.session.add(album)
-        song = Song(title=form.s_title.data, artist=artist, album=album)
-        db.session.add(song)
+    artist = get_artist(form.s_artist.data)
+    album = get_item(Album, form.album.data, artist) if form.album.data != '' else None
+    song = get_item(Song, form.s_title.data, artist, album=album)
     association = FavoriteSong.query.filter(FavoriteSong.user == user, FavoriteSong.song == song).first()
-    if association is None:
-        user.favorite_songs.append(FavoriteSong(song=song, rating=form.s_score.data))
-    else:
-        association.rating = form.s_score.data
+    if association is None: user.favorite_songs.append(FavoriteSong(song=song, rating=form.s_score.data))
+    elif form.s_score.data is not None: association.rating = form.s_score.data
     db.session.commit()
 
 @app.route('/profile', methods=['GET', 'POST'])
