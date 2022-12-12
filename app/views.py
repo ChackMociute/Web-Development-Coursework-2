@@ -88,6 +88,15 @@ def select():
 
     return json.dumps({'status': 'OK', 'data': data, 'artist': artist.name, 'type': type.title()})
 
+@app.route('/albumSongs', methods=['POST'])
+def album_songs():
+    data = json.loads(request.data)
+    album = Album.query.get(int(data.get('id')))
+    data = [{'title': s.title, 'score': s.mean_score()} for s in
+            sorted(album.songs, key=lambda x: 0 if x.mean_score() is None else x.mean_score(), reverse=True)]
+
+    return json.dumps({'status': 'OK', 'data': data, 'album': album.title})
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
