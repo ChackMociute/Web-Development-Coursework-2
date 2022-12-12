@@ -7,6 +7,10 @@ class LoginForm(FlaskForm):
     username = StringField('username', validators=[DataRequired(), Length(max=50)])
     password = PasswordField('password', validators=[DataRequired()])
 
+class PasswordChangeForm(FlaskForm):
+    old = PasswordField('old_password', validators=[DataRequired()])
+    new = PasswordField('new_password', validators=[DataRequired()])
+
 class AlbumForm(FlaskForm):
     a_title = StringField('title', validators=[DataRequired(), Length(max=200)], render_kw={'placeholder': 'Title'})
     a_artist = StringField('artist', validators=[DataRequired(), Length(max=150)], render_kw={'placeholder': 'Artist'})

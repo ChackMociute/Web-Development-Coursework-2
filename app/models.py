@@ -34,6 +34,9 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
     
+    def change_password(self, password):
+        self.password = self.encrypt_password(password)
+    
     def __repr__(self):
         return self.username
 

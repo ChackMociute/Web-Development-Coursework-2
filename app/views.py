@@ -3,7 +3,7 @@ from flask import render_template, request, redirect, url_for, flash, session
 from flask_admin.contrib.sqla import ModelView
 from flask_login import login_user, login_required
 from .models import User, Artist, Album, Song
-from .forms import LoginForm
+from .forms import LoginForm, PasswordChangeForm
 from .utils import base, recommendations, load_profile, edit_entry
 
 import json
@@ -68,6 +68,19 @@ def update():
     update = edit_entry()
     if update is None: return redirect(url_for('profile'))
     return base('edit', **update)
+
+@app.route('/profile/password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = PasswordChangeForm()
+    if form.validate_on_submit():
+        user = User.query.get(int(session['_user_id']))
+        if user.verify_password(form.old.data):
+            user.change_password(form.new.data)
+            db.session.commit()
+            return redirect(url_for('profile'))
+        else: flash("Incorrect password")
+    return base('password', form=form)
 
 @app.route('/edit', methods=['POST'])
 def edit():

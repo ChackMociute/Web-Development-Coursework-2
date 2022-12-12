@@ -15,6 +15,8 @@ def base(page, **kwargs):
         return redirect(url_for('login'))
     if 'signup' in request.form:
         return redirect(url_for('signup'))
+    if 'password' in request.form:
+        return redirect(url_for('change_password'))
     if 'logout' in request.form:
         logout_user()
         return redirect(url_for('home'))

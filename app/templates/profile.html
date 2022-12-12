@@ -98,7 +98,10 @@
         </table>
     </form>
     <div class='col-3'>
-        <h3><center><b>Add album</b></center></h3>
+        <form action="" method="post" class='col-12'>
+                <button type="submit" name="password" class="btn btn-info col-12">Change password</button>
+        </form>
+        <h3 class="my-4"><center><b>Add album</b></center></h3>
         <form action="" method="post" name="add_album">
             {{ album_form.hidden_tag() }}
             <div class='container-fluid'>
