@@ -17,7 +17,9 @@
                             {% if rec.album.year_released == None %}
                                 <h5><p>From <i>{{ rec.album }}</i><p></h5>
                             {% else %}
-                                <h5><p>From <i>{{ rec.album }} ({{rec.album.year_released}})</i><p></h5>
+                                <h5><p>From <i>{{ rec.album }}
+                                    {% if rec.album.year_released != None %} ({{rec.album.year_released}}){% endif %}
+                                </i><p></h5>
                             {% endif %}
                         </div>
                     {% endfor %}
