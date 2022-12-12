@@ -77,6 +77,17 @@ def edit():
     
     return json.dumps({'status': 'OK', 'id': id, 'type': type})
 
+@app.route('/select', methods=['POST'])
+def select():
+    data = json.loads(request.data)
+    type, id = *data.get('id').split(','),
+    artist = Artist.query.get(int(id))
+    data = artist.songs if type == 'songs' else artist.albums
+    data = [{'title': d.title, 'score': d.mean_score()} for d in
+            sorted(data, key=lambda x: 0 if x.mean_score() is None else x.mean_score(), reverse=True)]
+
+    return json.dumps({'status': 'OK', 'data': data, 'artist': artist.name, 'type': type.title()})
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
