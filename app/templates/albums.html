@@ -30,7 +30,7 @@
             <div class='col-lg-2 col-md-3 col-2 bg-secondary text-white rounded border text-center'>
                 </br>
                 {% if item.mean_score() != None %}
-                    <h5>{{ item.mean_score() }}</h5>
+                    <h5>{{ "%.0f"|format(item.mean_score()) }}</h5>
                 {% else %}
                     <h5>N/A</h5>
                 {% endif %}

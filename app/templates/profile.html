@@ -185,7 +185,7 @@
                         {% if album.album.year_released != None %}{{ album.album.year_released }}{% endif %}
                     </td>
                     <td align="center" style="position: relative;">
-                        {% if album.rating != None %}{{ album.rating }}{% endif %}
+                        {% if album.rating != None %}{{ "%.0f"|format(album.rating) }}{% endif %}
                         <p class="positioned" id="album{{ album.album.id }}"></p>
                         <a href="profile/edit" class="positioned d-sm-none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
@@ -238,7 +238,7 @@
                         {% if song.song.album != None %}{{ song.song.album }}{% endif %}
                     </td>
                     <td align="center" style="position: relative;">
-                        {% if song.rating != None %}{{ song.rating }}{% endif %}
+                        {% if song.rating != None %}{{ "%.0f"|format(song.rating) }}{% endif %}
                         <p class="positioned" id="song{{ song.song.id }}"></p>
                         <a href="profile/edit" class="positioned d-sm-none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
