@@ -5,7 +5,7 @@ from .models import User, Artist, Album, Song, FavoriteAlbum, FavoriteSong
 from .forms import AlbumForm, SongForm, AlbumEditForm, SongEditForm
 from sqlalchemy import func
 
-from random import choice, choices, seed
+from random import choice, sample, seed
 from datetime import date
 from time import mktime
 
@@ -24,8 +24,8 @@ def base(page, **kwargs):
 
 def recommendations():
     seed(mktime(date.today().timetuple()))
-    artists = choices(Artist.query.all(), k=3)
-    albums = [choice(artist.albums) for artist in artists]
+    artists = sample(Artist.query.join(Album).join(Song).all(), k=3)
+    albums = [choice([album for album in artist.albums if len(album.songs) > 0]) for artist in artists]
     songs = [choice(album.songs) for album in albums]
     return [
         {'artist': artist, 'song': song, 'album': album}
