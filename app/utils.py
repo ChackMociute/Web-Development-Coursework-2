@@ -1,4 +1,4 @@
-from app import db
+from app import db, app
 from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import logout_user
 from .models import User, Artist, Album, Song, FavoriteAlbum, FavoriteSong
@@ -8,9 +8,38 @@ from sqlalchemy import func
 from random import choice, sample, seed
 from datetime import date
 from time import mktime
+import logging
 
+
+def create_logger():
+    class LevelFilter(object):
+        def __init__(self, level):
+            self.level = level
+
+        def filter(self, logRecord):
+            return logRecord.levelno >= self.level
+    
+    logger = logging.getLogger('')
+    h1 = logging.FileHandler('logs/record.log')
+    h1.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s'))
+    h1.setLevel(logging.DEBUG)
+    h1.addFilter(LevelFilter(logging.INFO))
+    logger.addHandler(h1)
+
+    h2 = logging.FileHandler('logs/errors.log')
+    h2.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s'))
+    h2.setLevel(logging.ERROR)
+    h2.addFilter(LevelFilter(logging.ERROR))
+    logger.addHandler(h2)
+    logger.setLevel(logging.DEBUG)
+    
+    return logger
 
 def base(page, **kwargs):
+    if '_user_id' in session:
+        app.logger.info(f"User '{User.query.get(int(session['_user_id'])).username}' opened {page} page.")
+    else:
+        app.logger.info(f"Guest user opened {page} page.")
     if 'login' in request.form:
         return redirect(url_for('login'))
     if 'signup' in request.form:
@@ -18,6 +47,7 @@ def base(page, **kwargs):
     if 'password' in request.form:
         return redirect(url_for('change_password'))
     if 'logout' in request.form:
+        app.logger.info(f"User '{User.query.get(int(session['_user_id'])).username}' logged out.")
         logout_user()
         return redirect(url_for('home'))
     return render_template(f"{page}.html", **kwargs)
@@ -27,6 +57,7 @@ def recommendations():
     artists = sample(Artist.query.join(Album).join(Song).all(), k=3)
     albums = [choice([album for album in artist.albums if len(album.songs) > 0]) for artist in artists]
     songs = [choice(album.songs) for album in albums]
+    app.logger.info(f"Created daily recommendations")
     return [
         {'artist': artist, 'song': song, 'album': album}
         for artist, album, song
@@ -52,6 +83,7 @@ def add_album(user, form):
     elif form.a_score.data is not None: association.rating = form.a_score.data
     db.session.commit()
     flash("Album added successfully")
+    app.logger.info(f"User '{user.username}' succesfully added album with id {album.id}.")
 
 def add_song(user, form):
     artist = get_artist(form.s_artist.data)
@@ -62,6 +94,7 @@ def add_song(user, form):
     elif form.s_score.data is not None: association.rating = form.s_score.data
     db.session.commit()
     flash("Song added successfully")
+    app.logger.info(f"User '{user.username}' succesfully added album with id {song.id}.")
 
 def get_artist(artist_name):
     artist = Artist.query.filter(func.lower(Artist.name) == artist_name.lower()).first()
@@ -80,9 +113,12 @@ def get_item(table, title, artist, **kwargs):
     return item
 
 def remove_favorites(user, table, type):
-    for id in request.form.getlist(f"{type}_id"):
+    ids = request.form.getlist(f"{type}_id")
+    for id in ids:
         db.session.delete(table.query.get((user.id, int(id))))
     db.session.commit()
+    if len(ids) > 0:
+        app.logger.info(f"User '{User.query.get(int(session['_user_id'])).username}' successfully removed favorites.")
 
 
 def edit_entry():
@@ -94,6 +130,8 @@ def edit_entry():
         if album_update: update_album_db(form, item)
         else: update_song_db(form, item)
         db.session.commit()
+        app.logger.info(f"User '{User.query.get(int(session['_user_id'])).username}' "+
+                        f"succesfully edited {session['last']['type']} with id {id}.")
         return None
     return {'form': form, 'album': album_update, 'item':item}
 

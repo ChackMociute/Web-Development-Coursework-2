@@ -16,5 +16,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 bcrypt = Bcrypt(app)
 
+from .utils import create_logger
+app.logger = create_logger()
+
 
 from app import views, models

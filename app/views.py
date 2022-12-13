@@ -37,9 +37,11 @@ def login():
         user = User.query.filter(User.username == form.username.data).first()
         if user is None or not user.verify_password(form.password.data):
             flash('Wrong username or password.')
+            app.logger.info("Guest user failed to log in.")
             return render_template('login.html', form=form)
         else:
             login_user(user)
+            app.logger.info(f"'{user.username}' logged in.")
             return redirect(url_for('home'))
     return base('login', form=form)
 
@@ -50,10 +52,12 @@ def signup():
         user = User.query.filter(User.username == form.username.data).first()
         if user is not None:
             flash('Username already exists.')
+            app.logger.info("User attempted to sign up with a taken username.")
             return render_template('signup.html', form=form)
         else:
             db.session.add(User(username=form.username.data, password=form.password.data))
             db.session.commit()
+            app.logger.info(f"User '{form.username.data}' created.")
             return redirect(url_for('login'))
     return base('signup', form=form)
 
@@ -78,8 +82,11 @@ def change_password():
         if user.verify_password(form.old.data):
             user.change_password(form.new.data)
             db.session.commit()
+            app.logger.info(f"User '{User.query.get(int(session['_user_id'])).username}' changed their password.")
             return redirect(url_for('profile'))
-        else: flash("Incorrect password")
+        else:
+            app.logger.info(f"User '{User.query.get(int(session['_user_id'])).username}' failed to change their password.")
+            flash("Incorrect password")
     return base('password', form=form)
 
 @app.route('/edit', methods=['POST'])
@@ -93,15 +100,15 @@ def edit():
 @app.route('/select', methods=['POST'])
 def select():
     data = json.loads(request.data)
-    type, id, song_id = *data.get('id').split(','),
-    artist = Artist.query.get(int(id))
+    type, artist_id, id = *data.get('id').split(','),
+    artist = Artist.query.get(int(artist_id))
     data = artist.songs if type == 'songs' else artist.albums
     data = [{'title': d.title, 'score': d.mean_score()} for d in
             sorted(data, key=lambda x: 0 if x.mean_score() is None else x.mean_score(), reverse=True)]
-    try: prev, session['prev'] = session['prev'], song_id
-    except KeyError: prev = session['prev'] = song_id
+    try: prev, session['prev'] = session['prev'], id
+    except KeyError: prev = session['prev'] = id
 
-    return json.dumps({'status': 'OK', 'data': data, 'artist': artist.name, 'type': type.title(), 'id': song_id, 'prev': prev})
+    return json.dumps({'status': 'OK', 'data': data, 'artist': artist.name, 'type': type.title(), 'id': id, 'prev': prev})
 
 @app.route('/albumSongs', methods=['POST'])
 def album_songs():
