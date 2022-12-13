@@ -21,8 +21,11 @@ $(document).ready(function () {
             dataType: "json",
             success: function (response) {
                 console.log(response);
+                prev = $(response).attr('prev');
+                id = $(response).attr('id');
 
                 $('#artist_table').text('');
+                $('#artist_table' + prev).text('');
 
                 $('#artist_table').append($("\
                     <div class='row align-items-end'>\
@@ -40,10 +43,35 @@ $(document).ready(function () {
                     if (score == null) score = "N/A";
                     $('#artist_table').append($("\
                     <div class='row'>\
-                        <div class='col-10 bg-secondary text-white rounded border'>\
+                        <div class='col-10 bg-info text-white rounded border'>\
                             <h3>" + item['title'] + "</h3>\
                         </div>\
-                        <div class='col-2 bg-secondary text-white rounded border text-center'>\
+                        <div class='col-2 bg-info text-white rounded border text-center'>\
+                            <h5>" + score + "</h5>\
+                        </div>\
+                    </div>"));
+                });
+
+                $('#artist_table' + id).append($("\
+                    <div class='row align-items-end'>\
+                        <div class='col-10'>\
+                            </br>\
+                            <h2><b>Songs in album</br><i>" +
+                    $(response).attr('album') + "</i></b></h2>\
+                        </div>\
+                        <div class='col-2 text-center'>\
+                            <h5><b>Score</b></h5>\
+                        </div>\
+                    </div>"));
+                $.each($(response).attr('data'), function (ind, item) {
+                    let score = item['score'];
+                    if (score == null) score = "N/A";
+                    $('#artist_table' + id).append($("\
+                    <div class='row'>\
+                        <div class='col-10 bg-info text-white rounded border'>\
+                            <h3>" + item['title'] + "</h3>\
+                        </div>\
+                        <div class='col-2 bg-info text-white rounded border text-center'>\
                             <h5>" + score + "</h5>\
                         </div>\
                     </div>"));

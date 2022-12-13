@@ -93,22 +93,26 @@ def edit():
 @app.route('/select', methods=['POST'])
 def select():
     data = json.loads(request.data)
-    type, id = *data.get('id').split(','),
+    type, id, song_id = *data.get('id').split(','),
     artist = Artist.query.get(int(id))
     data = artist.songs if type == 'songs' else artist.albums
     data = [{'title': d.title, 'score': d.mean_score()} for d in
             sorted(data, key=lambda x: 0 if x.mean_score() is None else x.mean_score(), reverse=True)]
+    try: prev, session['prev'] = session['prev'], song_id
+    except KeyError: prev = session['prev'] = song_id
 
-    return json.dumps({'status': 'OK', 'data': data, 'artist': artist.name, 'type': type.title()})
+    return json.dumps({'status': 'OK', 'data': data, 'artist': artist.name, 'type': type.title(), 'id': song_id, 'prev': prev})
 
 @app.route('/albumSongs', methods=['POST'])
 def album_songs():
-    data = json.loads(request.data)
-    album = Album.query.get(int(data.get('id')))
+    id = int(json.loads(request.data).get('id'))
+    album = Album.query.get(id)
     data = [{'title': s.title, 'score': s.mean_score()} for s in
             sorted(album.songs, key=lambda x: 0 if x.mean_score() is None else x.mean_score(), reverse=True)]
+    try: prev, session['prev'] = session['prev'], id
+    except KeyError: prev = session['prev'] = id
 
-    return json.dumps({'status': 'OK', 'data': data, 'album': album.title})
+    return json.dumps({'status': 'OK', 'data': data, 'album': album.title, 'id': id, 'prev': prev})
 
 @login_manager.user_loader
 def load_user(user_id):

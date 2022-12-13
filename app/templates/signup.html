@@ -8,7 +8,7 @@
 {{ form.hidden_tag() }}
 <div class='container-fluid'>
 <div class='row my-4'>
-    <div class='col-4 offset-2'>
+    <div class='col-lg-8 col-md-10 col-12 offset-lg-2 offset-md-1 offset-0'>
         <h3><b>Choose username</b></h3>
         {{ form.username(class_='form-control') }}
         {% for error in form.username.errors %}
@@ -19,7 +19,7 @@
     </div>
 </div>
 <div class='row my-4'>
-    <div class='col-4 offset-2'>
+    <div class='col-lg-8 col-md-10 col-12 offset-lg-2 offset-md-1 offset-0'>
         <h3><b>Choose password</b></h3>
         {{ form.password(class_='form-control') }}
         {% for error in form.password.errors %}
@@ -30,9 +30,11 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-4 offset-2">
+    <div class="col-lg-8 col-md-10 col-12 offset-lg-2 offset-md-1 offset-0">
         <input type="submit" class="btn btn-primary col-12" value="Sign up">
     </div>
+</div>
+<div class="row">
     <div class="col-4 col-md-4 col-sm-12">
         {% with messages = get_flashed_messages() %}
         {% if messages %}

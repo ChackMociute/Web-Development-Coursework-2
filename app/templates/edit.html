@@ -8,46 +8,55 @@
 {{ form.hidden_tag() }}
 <div class='container-fluid'>
 <div class='row my-4'>
-    <div class='col-6 offset-2'>
+    <div class='col-lg-8 col-md-10 col-12 offset-lg-2 offset-md-1 offset-0'>
         <h2><center><b>Edit {% if album %}album{% else %}song{% endif %}: {{ item.title }}</b></center></h2>
         <h4><center><b>By <i>{{ item.artist }}</i></b></center></h4>
     </div>
 </div>
 <div class='row my-4'>
-    <div class='col-3 offset-2'>
+    <div class='col-lg-4 col-md-5 col-sm-6 col-12 offset-lg-2 offset-md-1 offset-0'>
         <h4><b>Score <i>(between 0 and 100)</i></b></h4>
         {{ form.score(class_='form-control') }}
+    </div>
+    <div class='col-lg-4 col-md-5 col-sm-6 col-12'>
+    {% if album %}
+        <h4><b>Release year</b></h4>
+        {{ form.year(class_='form-control') }}
+    {% else %}
+        <h4><b>Album</b></h4>
+        {{ form.album(class_='form-control') }}
+    {% endif %}
+    </div>
+    <div class='col-lg-4 col-md-5 col-sm-6 col-12 offset-lg-2 offset-md-1 offset-0'>
         {% for error in form.score.errors %}
         <div class="alert alert-danger" role="alert">
             [{{ error }}]
         </div>
         {% endfor %}
     </div>
-    <div class='col-3'>
-    {% if album %}
-        <h4><b>Release year</b></h4>
-        {{ form.year(class_='form-control') }}
-        {% for error in form.year.errors %}
-        <div class="alert alert-danger" role="alert">
-            [{{ error }}]
-        </div>
-        {% endfor %}
-    {% else %}
-    <h4><b>Album</b></h4>
-    {{ form.album(class_='form-control') }}
-    {% for error in form.album.errors %}
-    <div class="alert alert-danger" role="alert">
-        [{{ error }}]
-    </div>
-    {% endfor %}
-    {% endif %}
+    <div class='col-lg-4 col-md-5 col-sm-6 col-12'>
+        {% if album %}
+            {% for error in form.year.errors %}
+            <div class="alert alert-danger" role="alert">
+                [{{ error }}]
+            </div>
+            {% endfor %}
+        {% else %}
+            {% for error in form.album.errors %}
+            <div class="alert alert-danger" role="alert">
+                [{{ error }}]
+            </div>
+            {% endfor %}
+        {% endif %}
     </div>
 </div>
 {% if album %}
 <div class="row py-1">
-    <div class='col-6 offset-2'>
+    <div class='col-lg-8 col-md-10 col-12 offset-lg-2 offset-md-1 offset-0'>
         <h4><b>Songs (separated by commas)</b></h4>
         {{ form.songs(class_='form-control', style='height: 200px;') }}
+    </div>
+    <div class='col-lg-8 col-md-10 col-12 offset-lg-2 offset-md-1 offset-0'>
         {% for error in form.songs.errors %}
         <div class="alert alert-danger" role="alert">
             [{{ error }}]
@@ -57,10 +66,12 @@
 </div>
 {% endif %}
 <div class="row py-1">
-    <div class="col-6 offset-2">
+    <div class="col-lg-8 col-md-10 col-12 offset-lg-2 offset-md-1 offset-0">
         {{ form.submit(class_='form-control btn btn-primary col-12') }}
     </div>
-    <div class="col-6 offset-2">
+</div>
+<div class="row py-1">
+    <div class="col-lg-8 col-md-10 col-12 offset-lg-2 offset-md-1 offset-0">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}

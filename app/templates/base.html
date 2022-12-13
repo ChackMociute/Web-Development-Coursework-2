@@ -9,6 +9,7 @@
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
   
+	<script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}" ></script>
   {% block scripts %}{% endblock %}
 
   <style>
@@ -36,29 +37,31 @@
         <a class="navbar-brand" href="/songs">Songs</a>
         <a class="navbar-brand" href="/albums">Albums</a>
       </ul>
+      <ul class="navbar-nav mr-auto">
+        <div class="col-12 text-right">
+          <a class="navbar-text text-white"><h4><b>{% block page %}{% endblock %}</b></h4></a>
+        </div>
+      </ul>
+        <form action="", method="post">
+          <ul class="row navbar-nav ml-4 text-right">
+            {% if current_user.is_authenticated %}
+            <div class="col-lg-6 col-md-6 col-sm-12">
+              <a class='navbar-brand text-white py-lg-3 py-md-3' href="/profile"><h4>{{ current_user.username }}</h4></a>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+              <a class='navbar-brand text-white text-right'><button class="btn btn-outline-info" type="submit" name="logout"><h4>Log out</h4></button></a>
+            </div>
+            {% else %}
+              <div class="col-lg-5 col-md-5 col-sm-12 col-11 px-1">
+                <button class="btn btn-outline-info col-12" type="submit" name="login"><h4>Login</h4></button>
+              </div>
+              <div class="col-lg-7 col-md-7 col-sm-12 col-11 px-1">
+                <button class="btn btn-outline-info col-12" type="submit" name="signup"><h4>Sign up</h4></button>
+              </div>
+            {% endif %}
+        </ul>
+      </form>
     </div>
-    <div class="navbar-collapse" id="navbarSupportedContent">
-        <a class="navbar-text text-white"><h4><b>{% block page %}{% endblock %}</b></h4></a>
-    </div>
-    <form action="", method="post">
-      <span class="navbar-collapse">
-          {% if current_user.is_authenticated %}
-            <div class="px-2">
-              <a class='navbar-brand text-white' href="/profile"><h4>{{ current_user.username }}</h4></a>
-            </div>
-            <div class="px-4">
-              <button class="btn btn-outline-info" type="submit" name="logout"><h4>Log out</h4></button>
-            </div>
-          {% else %}
-            <div class="px-1">
-              <button class="btn btn-outline-info" type="submit" name="login"><h4>Login</h4></button>
-            </div>
-            <div class="px-1">
-              <button class="btn btn-outline-info" type="submit" name="signup"><h4>Sign up</h4></button>
-            </div>
-        {% endif %}
-      </span>
-    </form>
   </nav>
 
   {% block content %}{% endblock %}
