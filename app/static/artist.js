@@ -9,6 +9,8 @@ $(document).ready(function () {
         }
     });
 
+    // If the user clicks on an artist, show the page
+    // appropriate items belonging to that artist
     $("p.artist").on('click', function () {
         console.log($(this));
         console.log($(this).attr('id'));
@@ -24,9 +26,11 @@ $(document).ready(function () {
                 prev = $(response).attr('prev');
                 id = $(response).attr('id');
 
+                // Clear default and previous table
                 $('#artist_table').text('');
                 $('#artist_table' + prev).text('');
 
+                // Add the default item table
                 $('#artist_table').append($("\
                     <div class='row align-items-end'>\
                         <div class='col-10'>\
@@ -38,6 +42,7 @@ $(document).ready(function () {
                             <h5><b>Score</b></h5>\
                         </div>\
                     </div>"));
+                // For each item, add it to the table
                 $.each($(response).attr('data'), function (ind, item) {
                     let score = item['score'];
                     if (score == null) score = "N/A";
@@ -52,6 +57,7 @@ $(document).ready(function () {
                     </div>"));
                 });
 
+                // Add item table under the specific album for mobile
                 $('#artist_table' + id).append($("\
                     <div class='row align-items-end'>\
                         <div class='col-10'>\
@@ -63,6 +69,7 @@ $(document).ready(function () {
                             <h5><b>Score</b></h5>\
                         </div>\
                     </div>"));
+                // For each item, add it to the mobile table
                 $.each($(response).attr('data'), function (ind, item) {
                     let score = item['score'];
                     if (score == null) score = "N/A";

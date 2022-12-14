@@ -9,6 +9,7 @@ $(document).ready(function () {
         }
     });
 
+    // When hovering over a row, display the edit button
     $("tr.table").hover(function () {
         console.log($(this));
         console.log($(this).attr('id'));
@@ -24,7 +25,10 @@ $(document).ready(function () {
 
                 id = $(response).attr('id')
                 type = $(response).attr('type')
+                // Clear icon
                 $("p").text('');
+
+                // Find the right place to put the icon by id and place it there
                 $("#" + type + id).append($("<a href=\"profile/edit\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" \
                 fill=\"currentColor\" class=\"bi bi-gear-fill\" viewBox=\"0 0 16 16\">\
                 <path d=\"M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 \
@@ -43,6 +47,7 @@ $(document).ready(function () {
         });
     });
 
+    // When the mouse leaves the table, clear all edit icons
     $("tr.table").mouseleave(function () {
         console.log($(this));
         console.log($(this).attr('id'));
@@ -57,6 +62,7 @@ $(document).ready(function () {
             success: function (response) {
                 console.log(response);
 
+                // Clear every icon
                 $("p").text('');
             },
             // The function which will be triggered if any error occurs.

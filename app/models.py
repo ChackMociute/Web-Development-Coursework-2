@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from statistics import mean
 
 
+# Association class for many to many relationship between songs and users
 class FavoriteSong(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     song_id = db.Column(db.Integer, db.ForeignKey('song.id'), primary_key=True)
@@ -10,6 +11,7 @@ class FavoriteSong(db.Model):
     song = db.relationship('Song', back_populates='favored')
     rating = db.Column(db.Float)
 
+# Association class for many to many relationship between albums and users
 class FavoriteAlbum(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     album_id = db.Column(db.Integer, db.ForeignKey('album.id'), primary_key=True)
@@ -18,6 +20,7 @@ class FavoriteAlbum(db.Model):
     rating = db.Column(db.Float)
 
 class User(db.Model, UserMixin):
+    # Upon initialization encode the user password
     def __init__(self, password=None, **kwargs):
         if password is not None: kwargs['password'] = self.encrypt_password(password)
         super(User, self).__init__(**kwargs)
@@ -58,6 +61,7 @@ class Album(db.Model):
     songs = db.relationship('Song', back_populates='album')
     favored = db.relationship('FavoriteAlbum', back_populates='album')
     
+    # Calculate the average user rating for the album
     def mean_score(self):
         if len(self.favored) < 1: return None
         return mean([r.rating for r in self.favored])
@@ -74,6 +78,7 @@ class Song(db.Model):
     album = db.relationship('Album', back_populates='songs')
     favored = db.relationship('FavoriteSong', back_populates='song')
     
+    # Calculate the average user rating for the song
     def mean_score(self):
         if len(self.favored) < 1: return None
         return mean([r.rating for r in self.favored])
