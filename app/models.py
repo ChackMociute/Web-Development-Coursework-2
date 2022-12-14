@@ -1,6 +1,6 @@
 from app import db, bcrypt
 from flask_login import UserMixin
-from statistics import mean
+from statistics import mean, StatisticsError
 
 
 # Association class for many to many relationship between songs and users
@@ -63,8 +63,9 @@ class Album(db.Model):
     
     # Calculate the average user rating for the album
     def mean_score(self):
-        if len(self.favored) < 1: return None
-        return mean([r.rating for r in self.favored])
+        try: return mean([r.rating for r in self.favored if r.rating is not None])
+        except StatisticsError: return None
+        
     
     def __repr__(self):
         return self.title
@@ -80,8 +81,8 @@ class Song(db.Model):
     
     # Calculate the average user rating for the song
     def mean_score(self):
-        if len(self.favored) < 1: return None
-        return mean([r.rating for r in self.favored])
+        try: return mean([r.rating for r in self.favored if r.rating is not None])
+        except StatisticsError: return None
     
     def __repr__(self):
         return self.title
