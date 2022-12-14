@@ -8,7 +8,6 @@ from .utils import base, recommendations, load_profile, edit_entry, try_login, t
 
 import json
 
-admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Artist, db.session))
 admin.add_view(ModelView(Album, db.session))
 admin.add_view(ModelView(Song, db.session))
