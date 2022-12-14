@@ -1,5 +1,5 @@
 from app import app, db, admin, login_manager
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import request, redirect, url_for, session
 from flask_admin.contrib.sqla import ModelView
 from flask_login import login_required
 from .models import User, Artist, Album, Song
